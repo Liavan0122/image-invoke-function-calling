@@ -2,19 +2,12 @@
 自動判斷並輸出是否需要調用Generate Image的二元分類結果
 
 
-# 🖼️ Generate-Image Intent Detector  (Gemma-1B + LoRA)
+# 🖼️ Generate-Image Intent Detector  (Llama3.1 8B + LoRA)
 
 > 單函式（call(generate_image)）觸發判別的監督微調專案  
 > 🔗 *Enhancing small LLMs with simplified “function calling” capability*
-
+> 輸入任意對話句，模型輸出「是否需要產生圖片」的 function-calling 建議範例模板
 ---
-
-## 0. 專案簡述
-- **目標**：輸入任意對話句，模型輸出「是否需要產生圖片」的 JSON 模板  
-- **特色**  
-  1. 使用 **Gemma-3-1B-instruct** 4-bit 量化 + **LoRA** 微調  
-  2. ~2 k 句平衡標註資料，F1 ≈ 0.92  
-  3. 完整腳本：資料前處理 → SFT → 推論路由器 → 評估
 
 ## 環境需求
 | 套件 | 版本 | 備註 |
@@ -30,7 +23,7 @@
 pip install -r requirements.txt
 ```
 
-## 使用方法
+## 使用方法 How to Start
 ### Generate Datasets
 ```
 cd project_root/src/
@@ -73,7 +66,7 @@ python evaluate_inference.py \
 | Raw seeds neg   | 15      | 自己創的     |
 | GPT-aug pos     | 1500    | GPT-4 擴充並大略人工複審      |
 | GPT-aug neg     | 1500    | GPT-4 擴充並大略人工複審      |
-| **合計**   | **3000** | **正例 51 % / 反例 49 %** |
+| **合計**   | **3000** | **正例 50 % / 反例 50 %** |
 
 | 項目       | 數量   |
 | ---------- | ------ | 
@@ -90,6 +83,10 @@ neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"
 
 - 做法 :
 主要根據seed內容去產生額外4個相同意思、但不同說法的句子，並且可以把新產生的句子加入 seed 中一起循環新增JSONL。
+
+- 成本 :
+0.01$ input
+0.05$ output
 
 ## 模型與訓練
 
@@ -116,8 +113,12 @@ neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"
 | Gradient     | 4                           |
 | Max length   | 1536                        |
 
+###
+![image](https://github.com/user-attachments/assets/ea9b40b8-9a97-43b4-af76-1d09fda8af3c)
+
 
 ## 評估結果
+評估的方式是**原始 Based Model + adapter**，節省硬體成本的方式。
 
 | 指標               | 值      |
 |--------------------|---------|
@@ -157,6 +158,24 @@ Processing: 請幫我在這張照片上加插圖
   Gold Label: 生成                                                                                                                                   
   Predicted: 不生成 (Model output: call("generate_image(<參數列表>)"))
 ```
+
+函式名稱後面多了 (<reference_photo_path>，導致我們用 fullmatch 嚴格符合 call("generate_image", {...}) 的正規判不出「生成」。因為我只用以下字串比對判斷是否call(generate_image)
+```
+CALL_FULLMATCH = re.compile(
+    r'^\s*call\(\s*["\']generate_image["\']\s*,\s*\{.*\}\s*\)\s*$',
+    re.S
+)
+```
+模型在遇到「基於已有圖片做修改」之類指令時，，傾向把原圖路徑或參數串到函數名裡，或把所有參數都包到一對括號內，遠離了用來判定的嚴格 JSON 結構。
+部分「負樣本」本身也很容易被視為生成意圖句子本身確實是在“請求製作一張圖片”，所以模型按直觀把它當成正樣本。這說明在訓練集裡，需要更多類似表達但「不生成」的負樣本來教模型區分何謂「生成新圖」 vs. “討論/生成文字”。
+
+## 反思
+1. 由於資料集多元性的侷限，對極度口語或 emoji 句型或是英語性混搭應該仍有漏判。
+2. 模型預測的準確度偏高有它的潛在性問題，因為測試集也是從訓練集分割出來的，我也找不到另一個人工的方式去Label另一個資料集去防止 overfitting。
+3. 失敗案例主因來自於 match `call("generate_image", {...})`判斷的函式不夠完善。
+4. 與題目要求 `handle_generate_image` 和 `generate_image_intent` 格式不太符合，是做完專案後才發現，希望與題目原意並沒有不同。
+5. 採用unsloth加速我訓練的簡易性及程式撰寫方便性、更大的幫助了設備上的限制，GPU不支援8B的大小，memory太小了
+6. trl+unsloth是我之前比較熟悉的開發流程
 
 ## License
 
