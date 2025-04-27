@@ -131,11 +131,11 @@ neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"
 ## 評估結果
 評估的方式是 inference **原始 Based Model + adapter**，節省硬體成本的方式。
 
-| 指標               | 值      |
-|--------------------|---------|
-| Precision (正例)    | 0.9753   |
-| Recall (正例)       | 0.9049   |
-| F1 Score            | 0.9388   |
+| 指標          | 值      |
+|---------------|---------|
+| Precision     | 0.9753   |
+| Recall        | 0.9049   |
+| F1 Score      | 0.9388   |
 
 ### Confusion Matrix
 
