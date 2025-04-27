@@ -25,7 +25,17 @@
 ```bash
 pip install -r requirements.txt
 ```
-
+或是
+```bash
+pip install openai
+pip install tqdm
+pip install torch torchvision torchaudio
+pip install datasets
+pip install "unsloth[gpu]"
+pip install trl
+pip install bitsandbytes accelerate
+pip install transformers wandb
+```
 ## 使用方法 How to Start
 ### Generate Datasets
 ```
