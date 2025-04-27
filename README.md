@@ -1,7 +1,3 @@
-# image-invoke-function-calling
-自動判斷並輸出是否需要調用Generate Image的二元分類結果
-
-
 # 🖼️ Generate-Image Intent Detector  (Llama3.1 8B + LoRA)
 
 > 🔗單函式（call(generate_image)）觸發判別的監督微調專案
