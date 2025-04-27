@@ -36,6 +36,8 @@ pip install trl
 pip install bitsandbytes accelerate
 pip install transformers wandb
 ```
+要注意盡量照順序下載套件，尤其是unsloth這行會有相依性問題如果順序反的話。
+
 ## 使用方法 How to Start
 ### Generate Datasets
 ```
