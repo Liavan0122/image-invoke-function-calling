@@ -190,7 +190,7 @@ CALL_FULLMATCH = re.compile(
 4. 與題目要求 `handle_generate_image` 和 `generate_image_intent` 格式不太符合，是做完專案後才發現，希望與題目原意並沒有不同。
 5. 採用unsloth加速我訓練的簡易性及程式撰寫方便性、更大的幫助了設備上的限制，GPU不支援8B的大小，memory太小了
 6. trl+unsloth是我之前比較熟悉的開發流程
-7. 過程中最大的問題是 LLama通常比較適應的簡易資料形式是 Alpaca，但希望可以讓語言模型更了解每個問句中的語意，選擇了ChatML，在程式某些部分就需要特別注意這塊。
+7. 過程中最大的問題是 LLama通常比較適應的簡易資料形式是 Alpaca，但希望可以讓語言模型更了解每個問句中的語意，選擇了ChatML，在程式某些部分就需要特別注意這塊的轉換。
 
 ## License
 
