@@ -4,9 +4,12 @@
 
 # 🖼️ Generate-Image Intent Detector  (Llama3.1 8B + LoRA)
 
-> 單函式（call(generate_image)）觸發判別的監督微調專案  
-> 🔗 *Enhancing small LLMs with simplified “function calling” capability*
-> 輸入任意對話句，模型輸出「是否需要產生圖片」的 function-calling 建議範例模板
+> 🔗單函式（call(generate_image)）觸發判別的監督微調專案
+>   
+> 🔗 Enhancing small LLMs with simplified “function calling” capability
+> 
+> 🔗輸入任意對話句，模型輸出「是否需要產生圖片」的 function-calling 簡易範例模板
+> 
 ---
 
 ## 環境需求
@@ -118,7 +121,7 @@ neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"
 
 
 ## 評估結果
-評估的方式是**原始 Based Model + adapter**，節省硬體成本的方式。
+評估的方式是 inference **原始 Based Model + adapter**，節省硬體成本的方式。
 
 | 指標               | 值      |
 |--------------------|---------|
@@ -159,15 +162,14 @@ Processing: 請幫我在這張照片上加插圖
   Predicted: 不生成 (Model output: call("generate_image(<參數列表>)"))
 ```
 
-函式名稱後面多了 (<reference_photo_path>，導致我們用 fullmatch 嚴格符合 call("generate_image", {...}) 的正規判不出「生成」。因為我只用以下字串比對判斷是否call(generate_image)
+1. 函式名稱後面多了 (<reference_photo_path>，導致我們用 fullmatch 嚴格符合 call("generate_image", {...}) 的正規判不出「生成」。因為我只用以下字串比對判斷是否call(generate_image)
 ```
 CALL_FULLMATCH = re.compile(
     r'^\s*call\(\s*["\']generate_image["\']\s*,\s*\{.*\}\s*\)\s*$',
     re.S
 )
 ```
-模型在遇到「基於已有圖片做修改」之類指令時，，傾向把原圖路徑或參數串到函數名裡，或把所有參數都包到一對括號內，遠離了用來判定的嚴格 JSON 結構。
-部分「負樣本」本身也很容易被視為生成意圖句子本身確實是在“請求製作一張圖片”，所以模型按直觀把它當成正樣本。這說明在訓練集裡，需要更多類似表達但「不生成」的負樣本來教模型區分何謂「生成新圖」 vs. “討論/生成文字”。
+2. 部分「負樣本」本身也很容易被視為生成意圖句子本身確實是在“請求製作一張圖片”，所以模型按直觀把它當成正樣本。這說明在訓練集裡，需要更多類似表達但「不生成」的負樣本來教模型區分何謂「生成新圖」 vs. “討論/生成文字”，所以最主因應該是datasets的問題。
 
 ## 反思
 1. 由於資料集多元性的侷限，對極度口語或 emoji 句型或是英語性混搭應該仍有漏判。
@@ -176,6 +178,7 @@ CALL_FULLMATCH = re.compile(
 4. 與題目要求 `handle_generate_image` 和 `generate_image_intent` 格式不太符合，是做完專案後才發現，希望與題目原意並沒有不同。
 5. 採用unsloth加速我訓練的簡易性及程式撰寫方便性、更大的幫助了設備上的限制，GPU不支援8B的大小，memory太小了
 6. trl+unsloth是我之前比較熟悉的開發流程
+7. 過程中最大的問題是 LLama通常比較適應的簡易資料形式是 Alpaca，但希望可以讓語言模型更了解每個問句中的語意，選擇了ChatML，在程式某些部分就需要特別注意這塊。
 
 ## License
 
