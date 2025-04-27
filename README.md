@@ -22,7 +22,7 @@
 | Python | 3.10 | |
 | transformers | 4.40 ↑ | |
 | peft | 0.10 ↑ | |
-| datasets | 2.19 ↑ | |
+| datasets | 3 ↑ | |
 | bitsandbytes | 0.43 ↑ | 4-bit 量化 |
 | tqdm | 4.66 ↑ | 進度條 |
 
@@ -31,7 +31,39 @@ pip install -r requirements.txt
 ```
 
 ## 使用方法
+### Generate Datasets
+```
+cd project_root/src/
+python generate_image_call_datasets.py
+```
+產生訓練&測試集在 `project_root/datas/`
 
+### Lora-Finetuning
+```
+python run_sft.py \
+  --data_file ../datas/image_call_train.jsonl \
+  --train_ratio 0.9 \
+  --model_name unsloth/Llama-3.1-8B-unsloth-bnb-4bit \
+  --output_base ../model \
+  --project_name function_sft \
+  --device cuda:0
+```
+微調後的模型路徑為 `project_root/model/`
+
+### Inference
+#### 單句推論
+```
+python function_call_inference.py \
+    --adapter_dir ../model/unsloth-Llama-3.1-8B-unsloth-bnb-4bit/adapter/checkpoint-56 \
+    --base_model unsloth/Llama-3.1-8B-unsloth-bnb-4bit
+```
+#### 批次推論 & 評估
+```
+python evaluate_inference.py \
+  --base_model unsloth/Llama-3.1-8B-unsloth-bnb-4bit \
+  --adapter_dir ../model/unsloth-Llama-3.1-8B-unsloth-bnb-4bit_3000/adapter/checkpoint-135 \
+  --test_file ../datas/image_call_test.jsonl
+```
 
 ## 資料集構建
 
@@ -56,8 +88,8 @@ pos : {"messages": [{"role": "user", "content": "能否提供一幅吉卜力風�
 neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"}, {"role": "assistant", "content": "作者是攝影師山田太郎，其作品多以人文街拍聞名。"}]}
 ```
 
-- 前處理 :
-去除重複、英中混雜整理、token 128 以上截斷
+- 做法 :
+主要根據seed內容去產生額外4個相同意思、但不同說法的句子，並且可以把新產生的句子加入 seed 中一起循環新增JSONL。
 
 ## 模型與訓練
 
