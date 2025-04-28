@@ -181,7 +181,7 @@ CALL_FULLMATCH = re.compile(
 
 ## 反思
 1. 由於資料集多元性的侷限，對極度口語或 emoji 句型或是英語性混搭應該仍有漏判。
-2. 模型預測的準確度偏高有它的潛在性問題，因為測試集也是從訓練集分割出來的，我也找不到另一個人工的方式去Label另一個資料集去防止 overfitting。
+2. 模型預測的準確度偏高有它的潛在性問題，因為測試集也是從訓練集分割出來的，所以都是從seed衍伸過來地就可能會有 overfitting 的情況。
 3. 失敗案例主因來自於 match `call("generate_image", {...})`判斷的函式不夠完善。
 4. 與題目要求 `handle_generate_image` 和 `generate_image_intent` 格式不太符合，是做完專案後才發現，希望與題目原意並沒有不同。
 5. 採用unsloth加速我訓練的簡易性及程式撰寫方便性、更大的幫助了設備上的限制，GPU不支援8B的大小，memory太小了
