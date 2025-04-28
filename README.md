@@ -93,7 +93,7 @@ neg : {"messages": [{"role": "user", "content": "這張影像的作者是誰？"
 ```
 
 - 做法 :
-主要根據seed內容去產生額外4個相同意思、但不同說法的句子，並且可以把新產生的句子加入 seed 中一起循環新增JSONL。
+主要根據seed內容去call openai api gpt-4o-mini 產生額外4個相同意思、但不同說法的句子，並且可以把新產生的句子加入 seed 中一起循環新增JSONL。
 
 - 成本 :
 0.01$ input
