@@ -190,5 +190,7 @@ CALL_FULLMATCH = re.compile(
 
 ## License
 
-本專案採用 [MIT License](LICENSE) 授權，詳情請見專案根目錄的 `LICENSE` 檔案。  
+本專案採用 **MIT License with Commons Clause v1.0**，禁止任何商業銷售或收費使用。  
+（非商業、個人或學術用途可自由使用／修改／散布）  
+如需商業授權或許可，請聯絡 liavanenglish@gmail.com。  
 Copyright © 2025 Liavan-0122, CHUN-MING YANG
